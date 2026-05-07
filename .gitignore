@@ -15,6 +15,9 @@ dist-ssr
 # Backend - Maven
 backend/target/
 
+# Claude Code
+.claude/worktrees/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
