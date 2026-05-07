@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"d:\\\\Proyectos\\\\Facu\\\\10mo Semestre\\\\DevOps Kubernetes\\\\proyecto-grupal-kubernetes\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)"
+    ]
+  }
+}
