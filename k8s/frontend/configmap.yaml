@@ -5,4 +5,4 @@ metadata:
   namespace: devops-lab
 data:
   # Reemplazar MINIKUBE_IP con la salida de: minikube ip
-  VITE_API_URL: "http://MINIKUBE_IP:30300/api"
+  VITE_API_URL: "http://192.168.49.2:30300/api"

@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
 import './App.css'
 
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2)
+
 const initialPlayers = [
-  { id: crypto.randomUUID(), name: 'Dani', slices: 0 },
-  { id: crypto.randomUUID(), name: 'Mica', slices: 0 },
-  { id: crypto.randomUUID(), name: 'Leo', slices: 0 },
+  { id: uid(), name: 'Dani', slices: 0 },
+  { id: uid(), name: 'Mica', slices: 0 },
+  { id: uid(), name: 'Leo', slices: 0 },
 ]
 
 function App() {
@@ -33,7 +35,7 @@ function App() {
 
     setPlayers((currentPlayers) => [
       ...currentPlayers,
-      { id: crypto.randomUUID(), name, slices: 0 },
+      { id: uid(), name, slices: 0 },
     ])
     setNewPlayer('')
   }
