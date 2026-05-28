@@ -5,7 +5,7 @@ USER root
 ARG DOCKER_GID=999
 
 ENV MAVEN_RELEASE=3 \
-    MAVEN_VERSION=3.9.9 \
+    MAVEN_VERSION=3.9.16 \
     MAVEN_HOME=/opt/maven
 
 # Layer 1: System tools

@@ -47,7 +47,7 @@ services:
     build:
       context: ./jenkins
       args:
-        DOCKER_GID: ${DOCKER_GID:-999}
+        DOCKER_GID: ${DOCKER_GID:-984}
     image: pizza_corrida_jenkins
     container_name: pizza_corrida_jenkins
     restart: unless-stopped
