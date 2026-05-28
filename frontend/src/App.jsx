@@ -93,8 +93,12 @@ function App() {
   }
 
   const handleAddSlice = async (playerId) => {
-    setLoading(true)
-    setError(null)
+    setCurrentMatch((m) => ({
+      ...m,
+      players: m.players.map((p) =>
+        p.id === playerId ? { ...p, slices: p.slices + 1 } : p,
+      ),
+    }))
     try {
       const updated = await pizzaApi.addSlice(currentMatch.id, playerId)
       setCurrentMatch((m) => ({
@@ -102,15 +106,23 @@ function App() {
         players: m.players.map((p) => (p.id === playerId ? updated : p)),
       }))
     } catch {
+      setCurrentMatch((m) => ({
+        ...m,
+        players: m.players.map((p) =>
+          p.id === playerId ? { ...p, slices: p.slices - 1 } : p,
+        ),
+      }))
       setError('No se pudo sumar la porción.')
-    } finally {
-      setLoading(false)
     }
   }
 
   const handleRemoveSlice = async (playerId) => {
-    setLoading(true)
-    setError(null)
+    setCurrentMatch((m) => ({
+      ...m,
+      players: m.players.map((p) =>
+        p.id === playerId ? { ...p, slices: Math.max(0, p.slices - 1) } : p,
+      ),
+    }))
     try {
       const updated = await pizzaApi.removeSlice(currentMatch.id, playerId)
       setCurrentMatch((m) => ({
@@ -118,9 +130,13 @@ function App() {
         players: m.players.map((p) => (p.id === playerId ? updated : p)),
       }))
     } catch {
+      setCurrentMatch((m) => ({
+        ...m,
+        players: m.players.map((p) =>
+          p.id === playerId ? { ...p, slices: p.slices + 1 } : p,
+        ),
+      }))
       setError('No se pudo restar la porción.')
-    } finally {
-      setLoading(false)
     }
   }
 
