@@ -182,7 +182,7 @@ function App() {
       <section className="topbar">
         <div>
           <p className="eyebrow">Pizza corrida</p>
-          <h1>Contador de porciones</h1>
+          <h1>Contador de Porciones</h1>
         </div>
 
         {view !== 'matches' && (
