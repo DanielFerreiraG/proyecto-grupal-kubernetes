@@ -1,0 +1,45 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: pizza_corrida_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pizza_corrida
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pizza_corrida"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: TU_USUARIO_DOCKERHUB/pizza-corrida-backend:latest
+    container_name: pizza_corrida_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: TU_USUARIO_DOCKERHUB/pizza-corrida-frontend:latest
+    container_name: pizza_corrida_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

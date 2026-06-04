@@ -127,63 +127,26 @@ En Windows con Docker Desktop este problema generalmente no ocurre.
 
 ---
 
-## 6. Crear el job de redeploy
+## 6. Pipelines CI/CD separados
 
-### 6.1 Nuevo job
+El proyecto utiliza dos pipelines independientes:
 
-1. En el panel principal, hacer click en **"New Item"**.
-2. Ingresar un nombre, por ejemplo: `redeploy-pizza-corrida`.
-3. Seleccionar **"Pipeline"** y hacer click en **"OK"**.
+| Pipeline | Archivo | Responsabilidad |
+|----------|---------|-----------------|
+| **CI** | `Jenkinsfile.ci` | Checkout → Build → Push a Docker Hub |
+| **CD** | `Jenkinsfile.cd` | Pull desde Docker Hub → Deploy |
 
-### 6.2 Configurar el pipeline
+El flujo completo es:
 
-En la pantalla de configuración del job, bajar hasta la sección **Pipeline** y configurar:
-
-- **Definition:** `Pipeline script`
-- **Script:** pegar el siguiente código, reemplazando la URL del repositorio:
-
-```groovy
-pipeline {
-    agent any
-
-    environment {
-        COMPOSE_PROJECT_NAME = 'pizza_corrida'
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main',
-                    url: 'https://github.com/TU_ORG/proyecto-grupal-kubernetes.git'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'docker compose build --no-cache'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'docker compose up -d --remove-orphans'
-            }
-        }
-    }
-
-    post {
-        failure {
-            sh 'docker compose logs --tail=50'
-        }
-    }
-}
+```
+GitHub ──► [CI] Build & Push ──► Docker Hub ──► [CD] Pull & Deploy ──► Contenedores
 ```
 
-> La variable `COMPOSE_PROJECT_NAME=pizza_corrida` asegura que los nombres de volúmenes y la red interna sean siempre los mismos, independientemente del directorio de workspace que Jenkins use internamente.
+---
 
-Hacer click en **"Save"**.
+### 6.1 Configurar credenciales
 
-### 6.3 Configurar credenciales Git (solo si el repo es privado)
+#### Credenciales de GitHub
 
 1. Ir a **Manage Jenkins → Credentials → System → Global credentials → Add Credentials**.
 2. Completar:
@@ -191,27 +154,97 @@ Hacer click en **"Save"**.
    - *Username:* usuario de GitHub
    - *Password:* Personal Access Token de GitHub
    - *ID:* `github-credentials`
-3. En el script del pipeline, referenciar las credenciales:
+
+#### Credenciales de Docker Hub
+
+1. En la misma sección, agregar otra credencial:
+   - *Kind:* `Username with password`
+   - *Username:* usuario de Docker Hub
+   - *Password:* contraseña o Access Token de Docker Hub
+   - *ID:* `dockerhub-credentials`
+
+---
+
+### 6.2 Ajustar los placeholders
+
+Antes de crear los jobs, reemplazar en `Jenkinsfile.ci`, `Jenkinsfile.cd` y `docker-compose.prod.yml`:
+
+| Placeholder | Reemplazar con |
+|---|---|
+| `TU_USUARIO_DOCKERHUB` | Nombre de usuario en Docker Hub |
+| `TU_ORG/proyecto-grupal-kubernetes.git` | URL real del repositorio en GitHub |
+
+---
+
+### 6.3 Crear el job CI (Build & Push)
+
+1. En el panel principal, hacer click en **"New Item"**.
+2. Nombre: `pizza-corrida-ci`.
+3. Seleccionar **"Pipeline"** y hacer click en **"OK"**.
+4. En la sección **Pipeline**, configurar:
+   - *Definition:* `Pipeline script from SCM`
+   - *SCM:* `Git`
+   - *Repository URL:* URL del repositorio
+   - *Credentials:* `github-credentials`
+   - *Branch:* `*/main`
+   - *Script Path:* `Jenkinsfile.ci`
+5. Hacer click en **"Save"**.
+
+**Stages del pipeline CI:**
+
+```
+Checkout  →  Build Backend  →  Build Frontend  →  Push to Docker Hub
+```
+
+Las imágenes se publican con dos tags: `latest` y el número de build (`BUILD_NUMBER`).
+
+---
+
+### 6.4 Crear el job CD (Pull & Deploy)
+
+1. En el panel principal, hacer click en **"New Item"**.
+2. Nombre: `pizza-corrida-cd`.
+3. Seleccionar **"Pipeline"** y hacer click en **"OK"**.
+4. En la sección **Pipeline**, configurar:
+   - *Definition:* `Pipeline script from SCM`
+   - *SCM:* `Git`
+   - *Repository URL:* URL del repositorio
+   - *Credentials:* `github-credentials`
+   - *Branch:* `*/main`
+   - *Script Path:* `Jenkinsfile.cd`
+5. Hacer click en **"Save"**.
+
+**Stages del pipeline CD:**
+
+```
+Pull Backend Image  →  Pull Frontend Image  →  Deploy
+```
+
+El deploy usa `docker-compose.prod.yml`, que referencia las imágenes del registry en lugar de construirlas localmente.
+
+---
+
+### 6.5 Encadenar CI → CD automáticamente (opcional)
+
+Para que el pipeline CD se dispare automáticamente al finalizar el CI, agregar al final del `Jenkinsfile.ci`:
 
 ```groovy
-stage('Checkout') {
-    steps {
-        git branch: 'main',
-            url: 'https://github.com/TU_ORG/proyecto-grupal-kubernetes.git',
-            credentialsId: 'github-credentials'
+post {
+    success {
+        build job: 'pizza-corrida-cd', wait: false
     }
 }
 ```
 
 ---
 
-## 7. Ejecutar el job
+## 7. Ejecutar los pipelines
 
-1. En el panel del job, hacer click en **"Build Now"**.
-2. El progreso aparece en el panel izquierdo bajo **"Build History"**.
-3. Hacer click en el número de build y luego en **"Console Output"** para ver los logs en tiempo real.
+1. Ejecutar primero **`pizza-corrida-ci`** haciendo click en **"Build Now"**.
+2. Una vez que el CI termine en verde, ejecutar **`pizza-corrida-cd`**.
+3. El progreso de cada build aparece en **"Build History"** → **"Console Output"**.
 
-Si todos los stages completan en verde, los contenedores fueron reconstruidos y redesplegados correctamente.
+Si todos los stages completan en verde, las imágenes fueron publicadas en Docker Hub y los contenedores actualizados correctamente.
 
 ---
 
