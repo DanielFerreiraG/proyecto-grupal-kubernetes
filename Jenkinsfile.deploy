@@ -29,7 +29,8 @@ pipeline {
             steps {
                 sh "sed -i 's|TU_USUARIO_DOCKERHUB/pizza-corrida-backend|${DOCKERHUB_USER}/pizza-corrida-api|g' docker-compose.prod.yml"
                 sh "sed -i 's|TU_USUARIO_DOCKERHUB/pizza-corrida-frontend|${DOCKERHUB_USER}/pizza-corrida-frontend|g' docker-compose.prod.yml"
-                sh 'docker compose -f docker-compose.prod.yml up -d --remove-orphans'
+                sh 'docker compose -f docker-compose.prod.yml down --remove-orphans'
+                sh 'docker compose -f docker-compose.prod.yml up -d'
             }
         }
 
