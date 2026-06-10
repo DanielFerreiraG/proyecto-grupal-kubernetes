@@ -3,7 +3,6 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: pizza_corrida_postgres
-    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
@@ -22,7 +21,6 @@ services:
     build: ./backend
     image: pizza_corrida_api
     container_name: pizza_corrida_api
-    restart: unless-stopped
     ports:
       - "3000:3000"
     env_file:
@@ -35,7 +33,6 @@ services:
     build: ./frontend
     image: pizza_corrida_frontend
     container_name: pizza_corrida_frontend
-    restart: unless-stopped
     ports:
       - "5173:5173"
     env_file:
@@ -46,7 +43,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: pizza_corrida_prometheus
-    restart: unless-stopped
+
     ports:
       - "9090:9090"
     volumes:
@@ -59,7 +56,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: pizza_corrida_grafana
-    restart: unless-stopped
+
     ports:
       - "3001:3000"
     volumes:
@@ -71,7 +68,7 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: pizza_corrida_cadvisor
-    restart: unless-stopped
+
     ports:
       - "8081:8080"
     volumes:
@@ -84,7 +81,7 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     container_name: pizza_corrida_node_exporter
-    restart: unless-stopped
+
     ports:
       - "9100:9100"
     volumes:
@@ -103,7 +100,7 @@ services:
         DOCKER_GID: ${DOCKER_GID:-984}
     image: pizza_corrida_jenkins
     container_name: pizza_corrida_jenkins
-    restart: unless-stopped
+
     ports:
       - "8080:8080"
       - "50000:50000"
