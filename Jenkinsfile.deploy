@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_USER        = 'jorgefigueredo'
+        BACKEND_IMAGE         = "${DOCKERHUB_USER}/pizza-corrida-api"
+        FRONTEND_IMAGE        = "${DOCKERHUB_USER}/pizza-corrida-frontend"
+        COMPOSE_PROJECT_NAME  = 'pizza_corrida'
+    }
+
+    stages {
+
+        stage('Pull Imagenes') {
+            parallel {
+                stage('Backend') {
+                    steps {
+                        sh "docker pull ${BACKEND_IMAGE}:latest"
+                    }
+                }
+                stage('Frontend') {
+                    steps {
+                        sh "docker pull ${FRONTEND_IMAGE}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "sed -i 's|TU_USUARIO_DOCKERHUB/pizza-corrida-backend|${DOCKERHUB_USER}/pizza-corrida-api|g' docker-compose.prod.yml"
+                sh "sed -i 's|TU_USUARIO_DOCKERHUB/pizza-corrida-frontend|${DOCKERHUB_USER}/pizza-corrida-frontend|g' docker-compose.prod.yml"
+                sh 'docker compose -f docker-compose.prod.yml down --remove-orphans'
+                sh 'docker compose -f docker-compose.prod.yml up -d'
+            }
+        }
+
+        stage('Verificar') {
+            steps {
+                sh 'docker compose -f docker-compose.prod.yml ps'
+            }
+        }
+    }
+
+    post {
+        failure {
+            sh 'docker compose -f docker-compose.prod.yml logs --tail=50'
+        }
+        success {
+            echo 'Deploy completado: contenedores corriendo con la ultima imagen de Docker Hub.'
+        }
+    }
+}

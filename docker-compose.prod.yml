@@ -4,8 +4,6 @@ services:
     image: postgres:16-alpine
     container_name: pizza_corrida_postgres
     restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: pizza_corrida
       POSTGRES_USER: postgres
@@ -19,8 +17,7 @@ services:
       retries: 10
 
   backend:
-    build: ./backend
-    image: pizza_corrida_api
+    image: TU_USUARIO_DOCKERHUB/pizza-corrida-backend:latest
     container_name: pizza_corrida_api
     restart: unless-stopped
     ports:
@@ -32,8 +29,7 @@ services:
         condition: service_healthy
 
   frontend:
-    build: ./frontend
-    image: pizza_corrida_frontend
+    image: TU_USUARIO_DOCKERHUB/pizza-corrida-frontend:latest
     container_name: pizza_corrida_frontend
     restart: unless-stopped
     ports:
@@ -43,21 +39,5 @@ services:
     depends_on:
       - backend
 
-  jenkins:
-    build:
-      context: ./jenkins
-      args:
-        DOCKER_GID: ${DOCKER_GID:-984}
-    image: pizza_corrida_jenkins
-    container_name: pizza_corrida_jenkins
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins_data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-
 volumes:
   pgdata:
-  jenkins_data:

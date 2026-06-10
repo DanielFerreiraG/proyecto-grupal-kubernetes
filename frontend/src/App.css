@@ -128,9 +128,9 @@ button {
 }
 
 .ghost-button {
-  background: #fff7ed;
+  background: #dc2626;
   border-radius: 6px;
-  color: #9a3412;
+  color: #ffffff;
   font-weight: 800;
   min-height: 40px;
   padding: 0 16px;
@@ -245,6 +245,147 @@ button {
   border-radius: inherit;
   height: 100%;
   min-width: 4px;
+}
+
+/* Back button */
+.back-button {
+  background: transparent;
+  border: 1px solid #eadfd5;
+  border-radius: 6px;
+  color: #7c2d12;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 16px;
+}
+
+.back-button:hover {
+  background: #fff7ed;
+}
+
+/* Error banner */
+.error-banner {
+  align-items: center;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+  display: flex;
+  font-weight: 600;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+}
+
+.error-banner button {
+  background: transparent;
+  color: #991b1b;
+  font-size: 16px;
+  padding: 0 4px;
+}
+
+/* Loading / empty text */
+.loading-text,
+.empty-text {
+  color: #76675d;
+  padding: 16px 0 4px;
+  text-align: center;
+}
+
+/* Create match form */
+.create-match-form {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr auto;
+  margin-top: 22px;
+}
+
+.create-match-form input {
+  border: 1px solid #eadfd5;
+  border-radius: 8px;
+  color: #211a16;
+  min-height: 46px;
+  padding: 0 14px;
+}
+
+.create-match-form button {
+  background: #ea580c;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  min-height: 46px;
+  padding: 0 20px;
+}
+
+/* Matches list */
+.matches-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.match-card {
+  align-items: center;
+  background: #fffaf5;
+  border: 1px solid #f5e6d8;
+  border-radius: 8px;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 14px;
+}
+
+.match-card h3 {
+  margin-bottom: 6px;
+}
+
+.match-card-actions {
+  flex-shrink: 0;
+}
+
+.match-card-actions button {
+  background: #ea580c;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 0 18px;
+}
+
+/* Status badge */
+.status-badge {
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 10px;
+  text-transform: uppercase;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.finished {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Outline button (Ver stats) */
+.outline-button {
+  background: transparent !important;
+  border: 1px solid #eadfd5 !important;
+  color: #7c2d12 !important;
+}
+
+.outline-button:hover {
+  background: #fff7ed !important;
+}
+
+/* Disabled states */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 @media (max-width: 760px) {
