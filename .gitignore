@@ -1,7 +1,3 @@
-# Environment files with credentials - use .env.example as template
-.env
-**/.env
-
 # Logs
 logs
 *.log
